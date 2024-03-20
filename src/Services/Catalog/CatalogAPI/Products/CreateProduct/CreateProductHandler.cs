@@ -1,13 +1,11 @@
-﻿using BuildingBlocks.CQRS;
-using CatalogAPI.Models;
-using MediatR;
-
+﻿
 namespace CatalogAPI.Products.CreateProduct
 {
     public record CreateProductCommand(string Name , string Description , List<string> Category , string ImageFile , decimal Price )
                                         :ICommand<CreateProductResult>;
     public record CreateProductResult(Guid Id);
-    internal class CreateProductCommandHandler 
+    //constructor injection is used here.
+    internal class CreateProductCommandHandler(IDocumentSession session) 
                    : ICommandHandler<CreateProductCommand, CreateProductResult>
     {
         public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
@@ -26,9 +24,11 @@ namespace CatalogAPI.Products.CreateProduct
             };
 
             //save to database
+            session.Store(product);
+            await session.SaveChangesAsync(cancellationToken);
 
             //return result
-            return new CreateProductResult(Guid.NewGuid());
+            return new CreateProductResult(product.Id);
         }
     }
 }
