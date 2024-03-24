@@ -8,7 +8,7 @@ namespace CatalogAPI.Products.GetProducts
         {
             app.MapGet("/products", async (ISender sender) =>
             {
-                var result = await sender.Send(new GetProductsQuery);
+                var result = await sender.Send(new GetProductsQuery());
 
                 var response = result.Adapt<GetProductsResponse>();
 
